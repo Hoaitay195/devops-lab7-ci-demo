@@ -39,15 +39,26 @@ pipeline {
         }
 
         stage('Package and Archive') {
+                   stage('SonarQube Analysis') {
             steps {
                 dir('sample-java-app') {
-                    sh 'mvn -B package -DskipTests'
-                    archiveArtifacts(
-                        artifacts: 'target/*.jar',
-                        fingerprint: true
-                    )
+                    withSonarQubeEnv('SonarQube') {
+                        withCredentials([
+                            string(
+                                credentialsId: 'sonarqube-token',
+                                variable: 'SONAR_TOKEN'
+                            )
+                        ]) {
+                            sh '''
+                                mvn -B sonar:sonar \
+                                  -Dsonar.projectKey=devops-lab7 \
+                                  -Dsonar.projectName="DevOps Lab 7 CI Demo"
+                            '''
+                        }
+                    }
                 }
             }
+        }
         }
 
         stage('Publish to Nexus') {
