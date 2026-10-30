@@ -60,6 +60,11 @@ pipeline {
             }
         }
         }
+                stage('Switch to Nexus') {
+            steps {
+                input message: 'Stop SonarQube, start Nexus, wait until Nexus is ready, then click Proceed.'
+            }
+        }
 
         stage('Publish to Nexus') {
             steps {
