@@ -38,8 +38,7 @@ pipeline {
             }
         }
 
-        stage('Package and Archive') {
-                   stage('SonarQube Analysis') {
+        stage('SonarQube Analysis') {
             steps {
                 dir('sample-java-app') {
                     withSonarQubeEnv('SonarQube') {
@@ -59,8 +58,20 @@ pipeline {
                 }
             }
         }
+
+        stage('Package and Archive') {
+            steps {
+                dir('sample-java-app') {
+                    sh 'mvn -B package -DskipTests'
+                    archiveArtifacts(
+                        artifacts: 'target/*.jar',
+                        fingerprint: true
+                    )
+                }
+            }
         }
-                stage('Switch to Nexus') {
+
+        stage('Switch to Nexus') {
             steps {
                 input message: 'Stop SonarQube, start Nexus, wait until Nexus is ready, then click Proceed.'
             }
