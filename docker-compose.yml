@@ -1,11 +1,15 @@
 services:
   jenkins:
-    image: jenkins/jenkins:lts-jdk21
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
+    image: lab7-jenkins-docker:local
     container_name: lab7-jenkins
     ports:
       - "8080:8080"
     volumes:
       - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
     networks:
       - ci-network
